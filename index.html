@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Pixel Color</title>
+    <style>
+        .top {
+            height: 50px;
+            display: flex;
+
+        }
+
+
+        input[type="text"] {
+            height: 30px;
+            width: 300px;
+            outline: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #hovered-color,
+        #selected-color {
+            margin-left: 10px;
+            border: 1px solid #eee;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 180px;
+            height: 32px;
+            ;
+        }
+
+        canvas {
+            border: 1px solid #eee;
+            ;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="top">
+        <input type="file" name='img' accept="image/*" id="file" />
+        <input type="text" id='img-url' placeholder="https://" />
+        <div id="hovered-color">hovered color</div>
+        <div id="selected-color">selected color</div>
+    </div>
+    <canvas id='canvas' />
+
+    <script>
+        (function () {
+            var canvas = document.getElementById('canvas');
+            var ctx = canvas.getContext('2d');
+            var hoveredColor = document.getElementById('hovered-color');
+            var selectedColor = document.getElementById('selected-color');
+
+            /**
+             * 加载图片
+             * @return Promise<img>
+             */
+            async function loadImg(src) {
+                const img = new Image();
+                img.crossOrigin = 'anonymous';
+                const imgLoaded = new Promise((resolve, reject) => {
+                    img.onload = () => resolve(img);
+                    img.onerror = reject;
+                });
+                img.src = src.target ? src.target.result : src;
+                await imgLoaded;
+                return img;
+            }
+
+            function setCanvas(img) {
+                console.log(img.width, img.height)
+                let ratio = 1;
+                canvas.width = img.width * ratio
+                canvas.height = img.height * ratio
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                img.style.display = 'none';
+            }
+
+            const file = document.getElementById('file');
+            file.addEventListener('change', (event) => {
+                const f = event.target
+                console.log(f.value)
+
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    loadImg(e.target.result).then(img => {
+                        setCanvas(img)
+                    })
+                }
+                reader.readAsDataURL(f.files[0]);
+            })
+
+            const input = document.getElementById('img-url')
+            input.addEventListener('input', (event) => {
+                let value = event.target.value
+                if (/^http[s]?:\/\//.test(value)) {
+                    loadImg(value).then(img => {
+                        setCanvas(img)
+                    })
+                }
+            })
+
+
+
+            // js 参考 https://developer.mozilla.org/zh-CN/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas
+            // 默认一张图
+            loadImg('https://avatars.githubusercontent.com/u/16034259?v=4').then(img => {
+                setCanvas(img)
+            })
+
+            function pick(event, destination) {
+                var x = event.offsetX;
+                var y = event.offsetY;
+                var pixel = ctx.getImageData(x, y, 1, 1);
+                var data = pixel.data;
+                const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
+                destination.style.background = rgba;
+                destination.textContent = rgba;
+
+                return rgba;
+            }
+
+            canvas.addEventListener('mousemove', function (event) {
+                pick(event, hoveredColor);
+            });
+            canvas.addEventListener('click', function (event) {
+                pick(event, selectedColor);
+            });
+        })();
+    </script>
+</body>
+
+</html>
