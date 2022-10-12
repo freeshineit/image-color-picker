@@ -7,18 +7,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Pixel Color</title>
     <style>
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+        }
+
         .top {
             height: 50px;
             display: flex;
-
+            align-items: center;
         }
-
 
         input[type="text"] {
             height: 30px;
             width: 300px;
             outline: none;
-            padding: 0;
+            padding: 5px;
             margin: 0;
         }
 
@@ -36,7 +41,6 @@
 
         canvas {
             border: 1px solid #eee;
-            ;
         }
     </style>
 </head>
@@ -122,6 +126,7 @@
                 const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
                 destination.style.background = rgba;
                 destination.textContent = rgba;
+                destination.style.color = `rgba(${255 - data[0]}, ${255 - data[1]}, ${255 - data[2]}, 1)`;
 
                 return rgba;
             }
