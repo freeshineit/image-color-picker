@@ -48,11 +48,11 @@
 <body>
     <div class="top">
         <input type="file" name='img' accept="image/*" id="file" />
-        <input type="text" id='img-url' placeholder="https://" />
+        <input type="text" id='input_image_url' placeholder="https://" />
         <div id="hovered-color">hovered color</div>
         <div id="selected-color">selected color</div>
     </div>
-    <canvas id='canvas' />
+    <canvas id='canvas'></canvas>
 
     <script>
         (function () {
@@ -77,16 +77,30 @@
                 return img;
             }
 
+            /** 
+             * 设置canvas
+             * 
+             * 
+             */
             function setCanvas(img) {
-                console.log(img.width, img.height)
+
+                // const innerWidth = window.innerWidth
+                // const innerHeight = window.innerHeight - 50
+
+                // console.log(innerHeight, innerWidth)
+
                 let ratio = 1;
                 canvas.width = img.width * ratio
                 canvas.height = img.height * ratio
                 ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                 img.style.display = 'none';
+
             }
 
             const file = document.getElementById('file');
+
+            // TODO:监听文件变化
+            // 文件没有变化 不会执行
             file.addEventListener('change', (event) => {
                 const f = event.target
                 console.log(f.value)
@@ -100,16 +114,33 @@
                 reader.readAsDataURL(f.files[0]);
             })
 
-            const input = document.getElementById('img-url')
-            input.addEventListener('input', (event) => {
+            const input = document.getElementById('input_image_url')
+
+            // TODO: 监听输入变化
+            // input.addEventListener('input', (event) => {
+            //     // let value = event.target.value
+            //     // if (/^http[s]?:\/\//.test(value)) {
+            //     //     loadImg(value).then(img => {
+            //     //         setCanvas(img)
+            //     //     }).catch(() => {
+            //     //         console.error(new Error('The picture address is illegal'))
+            //     //     })
+            //     // }
+            // }, false)
+
+            // TODO:
+            input.addEventListener('blur', (event) => {
                 let value = event.target.value
                 if (/^http[s]?:\/\//.test(value)) {
                     loadImg(value).then(img => {
                         setCanvas(img)
+                    }).catch(() => {
+                        console.error(new Error('The picture address is illegal'))
                     })
+                } else {
+                    console.error(new Error('The picture address is illegal'))
                 }
-            })
-
+            }, false)
 
 
             // js 参考 https://developer.mozilla.org/zh-CN/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas
@@ -118,6 +149,12 @@
                 setCanvas(img)
             })
 
+
+            /**
+             *  
+             * 挑选当前像素点的颜色(rgba)
+             * 
+             */
             function pick(event, destination) {
                 var x = event.offsetX;
                 var y = event.offsetY;
@@ -131,9 +168,12 @@
                 return rgba;
             }
 
+            // 鼠标在canvas 上移动
             canvas.addEventListener('mousemove', function (event) {
                 pick(event, hoveredColor);
             });
+
+            // 鼠标点下
             canvas.addEventListener('click', function (event) {
                 pick(event, selectedColor);
             });
