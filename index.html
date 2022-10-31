@@ -74,7 +74,6 @@
                 });
                 img.src = src.target ? src.target.result : src;
                 await imgLoaded;
-                return img;
             }
 
             /** 
@@ -134,8 +133,9 @@
                 if (/^http[s]?:\/\//.test(value)) {
                     loadImg(value).then(img => {
                         setCanvas(img)
-                    }).catch(() => {
-                        console.error(new Error('The picture address is illegal'))
+                    }).catch((error) => {
+                        console.error(new Error('The picture address is illegal'), error)
+                        alert('The picture address is illegal')
                     })
                 } else {
                     console.error(new Error('The picture address is illegal'))
@@ -163,7 +163,7 @@
                 const rgba = `rgba(${data[0]}, ${data[1]}, ${data[2]}, ${data[3] / 255})`;
                 destination.style.background = rgba;
                 destination.textContent = rgba;
-                destination.style.color = `rgba(${255 - data[0]}, ${255 - data[1]}, ${255 - data[2]}, 1)`;
+                destination.style.color = data[3] === 0 ? "#000" : `rgba(${255 - data[0]}, ${255 - data[1]}, ${255 - data[2]}, 1)`;
 
                 return rgba;
             }
