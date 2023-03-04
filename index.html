@@ -36,7 +36,6 @@
             justify-content: center;
             width: 180px;
             height: 32px;
-            ;
         }
 
         canvas {
@@ -65,7 +64,7 @@
              * 加载图片
              * @return Promise<img>
              */
-            async function loadImg(src) {
+            async function loadImage(src) {
                 const img = new Image();
                 img.crossOrigin = 'anonymous';
                 const imgLoaded = new Promise((resolve, reject) => {
@@ -79,16 +78,10 @@
             }
 
             /** 
-             * 设置canvas
-             * 
-             * 
+             * drawImage
+             * 绘制图片
              */
-            function setCanvas(img) {
-
-                // const innerWidth = window.innerWidth
-                // const innerHeight = window.innerHeight - 50
-
-                // console.log(innerHeight, innerWidth)
+            function drawImage(img) {
 
                 let ratio = 1;
                 canvas.width = img.width * ratio
@@ -108,8 +101,8 @@
 
                 var reader = new FileReader();
                 reader.onload = function (e) {
-                    loadImg(e.target.result).then(img => {
-                        setCanvas(img)
+                    loadImage(e.target.result).then(img => {
+                        drawImage(img)
                     })
                 }
                 reader.readAsDataURL(f.files[0]);
@@ -117,24 +110,12 @@
 
             const input = document.getElementById('input_image_url')
 
-            // TODO: 监听输入变化
-            // input.addEventListener('input', (event) => {
-            //     // let value = event.target.value
-            //     // if (/^http[s]?:\/\//.test(value)) {
-            //     //     loadImg(value).then(img => {
-            //     //         setCanvas(img)
-            //     //     }).catch(() => {
-            //     //         console.error(new Error('The picture address is illegal'))
-            //     //     })
-            //     // }
-            // }, false)
-
-            // TODO:
+            // TODO: 监听input失去焦点事件
             input.addEventListener('blur', (event) => {
                 let value = event.target.value
                 if (/^http[s]?:\/\//.test(value)) {
-                    loadImg(value).then(img => {
-                        setCanvas(img)
+                    loadImage(value).then(img => {
+                        drawImage(img)
                     }).catch((error) => {
                         console.error(new Error('The picture address is illegal'), error)
                         alert('The picture address is illegal')
@@ -147,13 +128,12 @@
 
             // js 参考 https://developer.mozilla.org/zh-CN/docs/Web/API/Canvas_API/Tutorial/Pixel_manipulation_with_canvas
             // 默认一张图
-            loadImg('https://avatars.githubusercontent.com/u/16034259?v=4').then(img => {
-                setCanvas(img)
+            loadImage('https://avatars.githubusercontent.com/u/16034259?v=4').then(img => {
+                drawImage(img)
             })
 
-
             /**
-             *  
+             * pick
              * 挑选当前像素点的颜色(rgba)
              * 
              */
